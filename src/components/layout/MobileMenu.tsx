@@ -1,10 +1,18 @@
 import { useEffect } from 'react';
-import { m as motion, AnimatePresence } from 'framer-motion';
+
+import {
+  m as motion,
+  AnimatePresence,
+} from 'framer-motion';
+
 import { X } from 'lucide-react';
 
 import { NAV_LINKS } from '@/data/navigation';
+
 import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
+
 import { IconButton } from '@/components/ui/IconButton';
+
 
 
 interface MobileMenuProps {
@@ -14,13 +22,16 @@ interface MobileMenuProps {
 }
 
 
+
 export function MobileMenu({
   isOpen,
   onClose,
   activeId,
 }: MobileMenuProps) {
 
+
   useLockBodyScroll(isOpen);
+
 
 
   useEffect(() => {
@@ -45,20 +56,24 @@ export function MobileMenu({
     );
 
 
-    return () =>
+    return () => {
+
       window.removeEventListener(
         'keydown',
         handleKeyDown
       );
+
+    };
 
 
   }, [isOpen, onClose]);
 
 
 
+
   return (
 
-    <AnimatePresence mode="wait">
+    <AnimatePresence>
 
       {isOpen && (
 
@@ -89,18 +104,17 @@ export function MobileMenu({
 
 
           transition={{
-            duration: 0.2,
+            duration: 0.18,
+            ease: 'easeOut',
           }}
 
 
           className="
             fixed
             inset-0
-            z-[100]
+            z-[60]
             bg-white
-            text-black
-            dark:bg-[#08080b]
-            dark:text-white
+            dark:bg-[--color-bg-dark]
             lg:hidden
           "
 
@@ -119,23 +133,30 @@ export function MobileMenu({
             "
           >
 
+
             <span
               className="
                 font-[--font-heading]
                 text-lg
                 font-bold
-                text-black
-                dark:text-white
+                text-[--color-text]
               "
             >
               Menu
             </span>
 
 
+
             <IconButton
-              icon={<X size={20} />}
+
+              icon={
+                <X size={20} />
+              }
+
               label="Close menu"
+
               onClick={onClose}
+
             />
 
 
@@ -143,9 +164,12 @@ export function MobileMenu({
 
 
 
+
+
           {/* LINKS */}
 
           <ul
+
             className="
               flex
               flex-col
@@ -153,15 +177,19 @@ export function MobileMenu({
               px-6
               pt-6
             "
+
           >
 
-            {NAV_LINKS.map((link) => {
+
+            {NAV_LINKS.map(
+              (link, index) => {
 
 
               const linkId =
                 link.href.startsWith('#')
                   ? link.href.slice(1)
                   : link.href;
+
 
 
               const isActive =
@@ -178,7 +206,7 @@ export function MobileMenu({
 
                   initial={{
                     opacity:0,
-                    x:-8,
+                    x:-10,
                   }}
 
 
@@ -189,6 +217,7 @@ export function MobileMenu({
 
 
                   transition={{
+                    delay:index * 0.03,
                     duration:0.2,
                   }}
 
@@ -199,48 +228,47 @@ export function MobileMenu({
 
                     href={link.href}
 
+
                     onClick={onClose}
 
 
-                    className={`
-                      block
-                      rounded-xl
-                      px-4
-                      py-3
-                      text-lg
-                      font-semibold
-                      transition-colors
+                    aria-current={
+                      isActive
+                        ? 'true'
+                        : undefined
+                    }
 
-                      ${
-                        isActive
 
-                        ? `
-                          bg-[--color-primary]/10
-                          text-[--color-primary]
-                        `
+                    className={[
 
-                        :
+                      'block rounded-xl px-4 py-3 text-lg font-medium transition-colors',
 
-                        `
-                          text-black
-                          hover:bg-black/5
+                      isActive
 
-                          dark:text-white
-                          dark:hover:bg-white/10
-                        `
-                      }
-                    `}
+                      ?
+
+                      'bg-[--color-primary]/10 text-[--color-primary]'
+
+                      :
+
+                      'text-[--color-text] hover:bg-black/5 dark:hover:bg-white/10'
+
+                    ].join(' ')}
+
 
                   >
 
                     {link.label}
+
 
                   </a>
 
 
                 </motion.li>
 
+
               );
+
 
             })}
 
@@ -248,15 +276,19 @@ export function MobileMenu({
           </ul>
 
 
+
         </motion.div>
 
       )}
+
 
     </AnimatePresence>
 
   );
 
+
 }
+
 
 
 export default MobileMenu;
