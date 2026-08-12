@@ -1,9 +1,5 @@
-import { useRef } from 'react';
-
 import {
   m as motion,
-  useScroll,
-  useTransform,
   type Variants,
 } from 'framer-motion';
 
@@ -18,6 +14,8 @@ import {
 import { Container } from '@/components/ui/Container';
 import { Button } from '@/components/ui/Button';
 import { IconButton } from '@/components/ui/IconButton';
+
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 
 import profileImage from '@/assets/images/hero/profile.jpg';
 
@@ -96,7 +94,7 @@ function FacebookIcon({
 
 
 /* =========================================================
-   ANIMATION
+   DESKTOP ENTRANCE ANIMATION
 ========================================================= */
 
 const fadeUp: Variants = {
@@ -144,30 +142,21 @@ const imageEntrance: Variants = {
 ========================================================= */
 
 export function Hero() {
-  const sectionRef = useRef<HTMLElement>(null);
+  /*
+   * IMPORTANT:
+   * iPhone Safari / Chrome use WebKit.
+   *
+   * On mobile we intentionally avoid:
+   * - hidden Framer Motion initial states
+   * - scroll-linked transforms
+   * - infinite image transforms
+   * - excessive backdrop blur
+   *
+   * Desktop keeps the premium animation.
+   */
 
-
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-
-    offset: [
-      'start start',
-      'end start',
-    ],
-  });
-
-
-  const glowY = useTransform(
-    scrollYProgress,
-    [0, 1],
-    ['0%', '30%'],
-  );
-
-
-  const glowOpacity = useTransform(
-    scrollYProgress,
-    [0, 1],
-    [1, 0],
+  const isMobile = useMediaQuery(
+    '(max-width: 768px)',
   );
 
 
@@ -188,7 +177,10 @@ export function Hero() {
     }
 
     projectsSection.scrollIntoView({
-      behavior: 'smooth',
+      behavior: isMobile
+        ? 'auto'
+        : 'smooth',
+
       block: 'start',
     });
   };
@@ -255,9 +247,18 @@ export function Hero() {
   };
 
 
+  /* =======================================================
+     MOBILE-SAFE ANIMATION VALUES
+  ======================================================= */
+
+  const entranceInitial =
+    isMobile
+      ? false
+      : 'hidden';
+
+
   return (
     <section
-      ref={sectionRef}
       id="home"
       aria-label="Introduction"
       className="
@@ -265,10 +266,13 @@ export function Hero() {
         isolate
         flex
         min-h-[100svh]
+        w-full
         items-center
-        overflow-hidden
+        overflow-x-hidden
+        overflow-y-visible
         pt-[88px]
         sm:min-h-[100dvh]
+        sm:overflow-hidden
       "
     >
 
@@ -306,15 +310,12 @@ export function Hero() {
 
 
       {/* =====================================================
-          BACKGROUND GLOW
+          STATIC BACKGROUND GLOW
+          No useScroll / useTransform
       ====================================================== */}
 
-      <motion.div
+      <div
         aria-hidden="true"
-        style={{
-          y: glowY,
-          opacity: glowOpacity,
-        }}
         className="
           pointer-events-none
           absolute
@@ -322,55 +323,68 @@ export function Hero() {
           -z-10
         "
       >
+
+        {/* PRIMARY GLOW */}
+
         <div
           className="
             absolute
             left-[42%]
             top-[15%]
-            h-[22rem]
-            w-[22rem]
+            h-56
+            w-56
             -translate-x-1/2
             rounded-full
-            bg-[--color-primary]/15
-            blur-[110px]
+            bg-[--color-primary]/10
+            blur-[55px]
             sm:h-[30rem]
             sm:w-[30rem]
+            sm:bg-[--color-primary]/15
             sm:blur-[125px]
           "
         />
+
+
+        {/* BLUE GLOW */}
 
         <div
           className="
             absolute
             left-[8%]
             top-[48%]
-            h-32
-            w-32
+            h-24
+            w-24
             rounded-full
-            bg-blue-500/10
-            blur-[80px]
+            bg-blue-500/[0.06]
+            blur-[45px]
             sm:h-36
             sm:w-36
+            sm:bg-blue-500/10
             sm:blur-[90px]
           "
         />
+
+
+        {/* PURPLE GLOW */}
 
         <div
           className="
             absolute
             right-[8%]
             top-[32%]
-            h-40
-            w-40
+            h-28
+            w-28
             rounded-full
-            bg-purple-500/10
-            blur-[90px]
+            bg-purple-500/[0.06]
+            blur-[50px]
             sm:h-48
             sm:w-48
+            sm:bg-purple-500/10
             sm:blur-[100px]
           "
         />
-      </motion.div>
+
+      </div>
 
 
       {/* =====================================================
@@ -418,12 +432,14 @@ export function Hero() {
       <Container
         className="
           relative
+          z-10
           w-full
           py-6
           sm:py-8
           lg:py-8
         "
       >
+
         <div
           className="
             grid
@@ -458,7 +474,7 @@ export function Hero() {
             <motion.div
               custom={0}
               variants={fadeUp}
-              initial="hidden"
+              initial={entranceInitial}
               animate="visible"
               className="
                 mb-4
@@ -469,6 +485,7 @@ export function Hero() {
                 lg:justify-start
               "
             >
+
               <span
                 className="
                   h-px
@@ -499,15 +516,18 @@ export function Hero() {
                   sm:w-10
                 "
               />
+
             </motion.div>
 
 
-            {/* NAME */}
+            {/* =================================================
+                NAME
+            ================================================== */}
 
             <motion.h1
               custom={1}
               variants={fadeUp}
-              initial="hidden"
+              initial={entranceInitial}
               animate="visible"
               className="
                 max-w-full
@@ -522,6 +542,7 @@ export function Hero() {
                 lg:text-[clamp(5.5rem,7.5vw,7.5rem)]
               "
             >
+
               <span
                 className="
                   bg-gradient-to-r
@@ -535,18 +556,25 @@ export function Hero() {
                 Saikat
               </span>
 
-              <span className="text-[--color-primary]">
+              <span
+                className="
+                  text-[--color-primary]
+                "
+              >
                 .
               </span>
+
             </motion.h1>
 
 
-            {/* TITLE */}
+            {/* =================================================
+                TITLE
+            ================================================== */}
 
             <motion.div
               custom={2}
               variants={fadeUp}
-              initial="hidden"
+              initial={entranceInitial}
               animate="visible"
               className="
                 mt-6
@@ -554,6 +582,7 @@ export function Hero() {
                 min-w-0
               "
             >
+
               <h2
                 className="
                   mx-auto
@@ -570,6 +599,7 @@ export function Hero() {
                   xl:text-[1.7rem]
                 "
               >
+
                 Electrical &amp; Electronic Engineering
 
                 <span
@@ -582,8 +612,11 @@ export function Hero() {
                 </span>
 
                 AI &amp; Software
+
               </h2>
 
+
+              {/* TYPING ROLE */}
 
               <div
                 className="
@@ -597,17 +630,24 @@ export function Hero() {
                   lg:text-left
                 "
               >
-                <TypingText words={ROLES} />
+
+                <TypingText
+                  words={ROLES}
+                />
+
               </div>
+
             </motion.div>
 
 
-            {/* DESCRIPTION */}
+            {/* =================================================
+                DESCRIPTION
+            ================================================== */}
 
             <motion.p
               custom={3}
               variants={fadeUp}
-              initial="hidden"
+              initial={entranceInitial}
               animate="visible"
               className="
                 mt-5
@@ -620,6 +660,7 @@ export function Hero() {
                 lg:text-left
               "
             >
+
               Passionate about solving real-world problems
               at the intersection of electrical and
               electronic engineering, artificial
@@ -628,15 +669,18 @@ export function Hero() {
               solutions with engineering thinking,
               creative strategy, and leadership
               experience.
+
             </motion.p>
 
 
-            {/* BUTTONS */}
+            {/* =================================================
+                BUTTONS
+            ================================================== */}
 
             <motion.div
               custom={4}
               variants={fadeUp}
-              initial="hidden"
+              initial={entranceInitial}
               animate="visible"
               className="
                 mt-7
@@ -650,6 +694,7 @@ export function Hero() {
                 lg:justify-start
               "
             >
+
               <Button
                 icon={
                   <ArrowRight size={16} />
@@ -658,6 +703,7 @@ export function Hero() {
               >
                 View My Projects
               </Button>
+
 
               <Button
                 variant="secondary"
@@ -668,15 +714,18 @@ export function Hero() {
               >
                 Download Resume
               </Button>
+
             </motion.div>
 
 
-            {/* SOCIAL LINKS */}
+            {/* =================================================
+                SOCIAL LINKS
+            ================================================== */}
 
             <motion.div
               custom={5}
               variants={fadeUp}
-              initial="hidden"
+              initial={entranceInitial}
               animate="visible"
               className="
                 mt-5
@@ -687,6 +736,7 @@ export function Hero() {
                 lg:justify-start
               "
             >
+
               <IconButton
                 icon={
                   <Github size={18} />
@@ -698,6 +748,7 @@ export function Hero() {
                   )
                 }
               />
+
 
               <IconButton
                 icon={
@@ -711,6 +762,7 @@ export function Hero() {
                 }
               />
 
+
               <IconButton
                 icon={
                   <FacebookIcon size={18} />
@@ -723,6 +775,7 @@ export function Hero() {
                 }
               />
 
+
               <IconButton
                 icon={
                   <Mail size={18} />
@@ -730,6 +783,7 @@ export function Hero() {
                 label="Send me an email"
                 onClick={sendEmail}
               />
+
             </motion.div>
 
 
@@ -740,7 +794,7 @@ export function Hero() {
             <motion.div
               custom={6}
               variants={fadeUp}
-              initial="hidden"
+              initial={entranceInitial}
               animate="visible"
               className="
                 mt-7
@@ -750,14 +804,16 @@ export function Hero() {
                 rounded-2xl
                 border
                 border-[--color-border]
-                bg-[--color-surface]/60
+                bg-[--color-surface]/75
                 px-3
                 py-5
-                backdrop-blur-md
+                sm:bg-[--color-surface]/60
                 sm:px-6
                 sm:py-5
+                sm:backdrop-blur-md
               "
             >
+
               <div
                 className="
                   grid
@@ -766,44 +822,53 @@ export function Hero() {
                   divide-[--color-border]
                 "
               >
-                {HERO_STATS.map((stat) => (
-                  <div
-                    key={stat.label}
-                    className="
-                      min-w-0
-                      px-2
-                      text-center
-                      sm:px-4
-                      lg:text-left
-                    "
-                  >
-                    <p
-                      className="
-                        text-xl
-                        font-black
-                        leading-none
-                        text-[--color-text]
-                        sm:text-2xl
-                      "
-                    >
-                      {stat.value}
-                    </p>
 
-                    <p
+                {HERO_STATS.map(
+                  (stat) => (
+
+                    <div
+                      key={stat.label}
                       className="
-                        mt-2
-                        text-[9px]
-                        font-semibold
-                        leading-tight
-                        text-[--color-text-muted]
-                        sm:text-xs
+                        min-w-0
+                        px-2
+                        text-center
+                        sm:px-4
+                        lg:text-left
                       "
                     >
-                      {stat.label}
-                    </p>
-                  </div>
-                ))}
+
+                      <p
+                        className="
+                          text-xl
+                          font-black
+                          leading-none
+                          text-[--color-text]
+                          sm:text-2xl
+                        "
+                      >
+                        {stat.value}
+                      </p>
+
+                      <p
+                        className="
+                          mt-2
+                          text-[9px]
+                          font-semibold
+                          leading-tight
+                          text-[--color-text-muted]
+                          sm:text-xs
+                        "
+                      >
+                        {stat.label}
+                      </p>
+
+                    </div>
+
+                  ),
+                )}
+
               </div>
+
             </motion.div>
 
           </div>
@@ -815,7 +880,7 @@ export function Hero() {
 
           <motion.div
             variants={imageEntrance}
-            initial="hidden"
+            initial={entranceInitial}
             animate="visible"
             className="
               order-1
@@ -828,22 +893,49 @@ export function Hero() {
               lg:justify-end
             "
           >
+
+            {/* ===============================================
+                MOBILE:
+                Static image wrapper.
+
+                DESKTOP:
+                Floating animation.
+            ================================================ */}
+
             <motion.div
-              animate={{
-                y: [0, -10, 0],
-              }}
-              transition={{
-                duration: 6,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
+              animate={
+                isMobile
+                  ? {
+                      y: 0,
+                    }
+                  : {
+                      y: [
+                        0,
+                        -10,
+                        0,
+                      ],
+                    }
+              }
+              transition={
+                isMobile
+                  ? {
+                      duration: 0,
+                    }
+                  : {
+                      duration: 6,
+                      repeat: Infinity,
+                      ease: 'easeInOut',
+                    }
+              }
               className="
                 relative
                 max-w-full
               "
             >
 
-              {/* IMAGE GLOW */}
+              {/* =================================================
+                  IMAGE GLOW
+              ================================================== */}
 
               <div
                 aria-hidden="true"
@@ -853,19 +945,24 @@ export function Hero() {
                   left-1/2
                   top-1/2
                   -z-10
-                  h-[85%]
-                  w-[85%]
+                  h-[75%]
+                  w-[75%]
                   -translate-x-1/2
                   -translate-y-1/2
                   rounded-full
-                  bg-[--color-primary]/20
-                  blur-[80px]
+                  bg-[--color-primary]/10
+                  blur-[45px]
+                  sm:h-[85%]
+                  sm:w-[85%]
+                  sm:bg-[--color-primary]/20
                   sm:blur-[90px]
                 "
               />
 
 
-              {/* IMAGE CARD */}
+              {/* =================================================
+                  IMAGE CARD
+              ================================================== */}
 
               <div
                 className="
@@ -874,20 +971,26 @@ export function Hero() {
                   rounded-[1.75rem]
                   border
                   border-[--color-border]
-                  bg-[--color-surface]/70
+                  bg-[--color-surface]
                   p-2.5
-                  shadow-2xl
-                  backdrop-blur-xl
+                  shadow-xl
                   sm:rounded-[2rem]
+                  sm:bg-[--color-surface]/70
                   sm:p-3
+                  sm:shadow-2xl
+                  sm:backdrop-blur-xl
                 "
               >
+
                 <img
                   src={profileImage}
                   alt="Portrait of Saikat"
                   loading="eager"
                   decoding="async"
+                  fetchPriority="high"
+                  draggable={false}
                   className="
+                    block
                     aspect-[4/5]
                     w-[min(72vw,290px)]
                     rounded-[1.35rem]
@@ -900,13 +1003,17 @@ export function Hero() {
                     xl:w-[410px]
                   "
                 />
+
               </div>
 
             </motion.div>
+
           </motion.div>
 
         </div>
+
       </Container>
+
     </section>
   );
 }
