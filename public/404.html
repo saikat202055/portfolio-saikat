@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Saikat | Portfolio</title>
+    <!--
+      GitHub Pages serves static files only, so a hard refresh on a
+      client-side route (e.g. /projects) returns a real 404.
+      This script redirects it back into index.html, which React
+      Router then uses to restore the correct route.
+    -->
+    <script>
+      const basePath = '/portfolio-saikat';
+      const path = window.location.pathname.replace(basePath, '') || '/';
+      window.location.replace(
+        basePath + '/?redirect=' + encodeURIComponent(path)
+      );
+    </script>
+  </head>
+  <body></body>
+</html>
