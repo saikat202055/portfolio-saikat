@@ -5,18 +5,22 @@ import { LazyMotion, domAnimation, MotionConfig } from 'framer-motion';
 
 import App from './App';
 import { ThemeProvider } from '@/context/ThemeContext';
-import { LoadingScreen } from '@/components/ui/LoadingScreen';
 
 import './index.css';
 
 const basename = import.meta.env.BASE_URL;
 
-createRoot(document.getElementById('root')!).render(
+const root = document.getElementById('root');
+
+if (!root) {
+  throw new Error('Root element not found');
+}
+
+createRoot(root).render(
   <StrictMode>
     <MotionConfig reducedMotion="user">
       <LazyMotion features={domAnimation} strict>
         <ThemeProvider>
-          <LoadingScreen />
           <BrowserRouter basename={basename}>
             <App />
           </BrowserRouter>
