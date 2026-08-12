@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+
 import {
   m as motion,
   AnimatePresence,
@@ -26,10 +27,12 @@ export function MobileMenu({
   activeId,
 }: MobileMenuProps) {
 
-
   useLockBodyScroll(isOpen);
 
 
+  /* =========================================
+     CLOSE MENU WITH ESCAPE KEY
+  ========================================= */
 
   useEffect(() => {
 
@@ -62,18 +65,15 @@ export function MobileMenu({
 
     };
 
-
   }, [
     isOpen,
     onClose,
   ]);
 
 
-
   return (
 
     <AnimatePresence>
-
 
       {isOpen && (
 
@@ -88,100 +88,166 @@ export function MobileMenu({
           aria-label="Mobile navigation"
 
 
-          initial={{
-            opacity:0,
-            x:'100%',
-          }}
+          /* =========================================
+             MENU ENTER / EXIT ANIMATION
+          ========================================= */
 
+          initial={{
+            opacity: 0,
+            x: '100%',
+          }}
 
           animate={{
-            opacity:1,
-            x:0,
+            opacity: 1,
+            x: 0,
           }}
-
 
           exit={{
-            opacity:0,
-            x:'100%',
+            opacity: 0,
+            x: '100%',
           }}
-
 
           transition={{
-            duration:0.25,
-            ease:[0.16,1,0.3,1],
+            duration: 0.3,
+            ease: [0.16, 1, 0.3, 1],
           }}
 
+
+          /* =========================================
+             FULL SCREEN MOBILE MENU
+          ========================================= */
 
           className="
             fixed
             inset-0
-            z-[999]
+            z-[9999]
+
+            isolate
+
             flex
+            h-[100dvh]
+            w-full
             min-h-[100dvh]
+
             flex-col
+
+            overflow-x-hidden
             overflow-y-auto
-            bg-[--color-bg]
+            overscroll-none
+
             lg:hidden
           "
+
+
+          /* 
+            IMPORTANT:
+            Inline background guarantees that the
+            navbar/page below cannot show through.
+          */
+
+          style={{
+            backgroundColor: 'var(--color-bg)',
+          }}
 
         >
 
 
-          {/* HEADER */}
+          {/* =========================================
+              HEADER
+          ========================================= */}
 
           <div
 
             className="
+              relative
+              z-10
+
               flex
-              h-20
+              min-h-20
               shrink-0
+
               items-center
               justify-between
+
+              gap-4
+
               px-5
+              pb-3
+
+              pt-[max(1rem,env(safe-area-inset-top))]
             "
 
           >
 
+
+            {/* MENU TITLE */}
+
             <span
+
               className="
+                min-w-0
                 font-[--font-heading]
                 text-xl
                 font-black
+                tracking-[-0.03em]
                 text-[--color-text]
               "
+
             >
               Menu
             </span>
 
 
 
-            <IconButton
+            {/* CLOSE BUTTON */}
 
-              icon={
-                <X size={22}/>
-              }
+            <div
+              className="
+                flex
+                shrink-0
+                items-center
+                justify-center
+              "
+            >
 
-              label="Close menu"
+              <IconButton
 
-              onClick={onClose}
+                icon={
+                  <X size={22} />
+                }
 
-            />
+                label="Close menu"
+
+                onClick={onClose}
+
+              />
+
+            </div>
 
 
           </div>
 
 
 
-          {/* LINKS */}
+          {/* =========================================
+              NAVIGATION LINKS
+          ========================================= */}
 
           <nav
 
             className="
+              relative
+              z-10
+
               flex
+              w-full
               flex-1
+
               items-start
-              px-6
-              pb-10
+
+              px-5
+              pb-[max(2.5rem,env(safe-area-inset-bottom))]
+              pt-3
             "
 
           >
@@ -192,7 +258,7 @@ export function MobileMenu({
                 flex
                 w-full
                 flex-col
-                gap-3
+                gap-2.5
               "
 
             >
@@ -207,14 +273,12 @@ export function MobileMenu({
 
                   const id =
                     link.href.startsWith('#')
-                    ? link.href.slice(1)
-                    : link.href;
-
+                      ? link.href.slice(1)
+                      : link.href;
 
 
                   const active =
                     activeId === id;
-
 
 
                   return (
@@ -223,18 +287,24 @@ export function MobileMenu({
 
                       key={link.href}
 
+                      className="
+                        w-full
+                      "
+
                       initial={{
-                        opacity:0,
-                        x:20,
+                        opacity: 0,
+                        x: 24,
                       }}
 
                       animate={{
-                        opacity:1,
-                        x:0,
+                        opacity: 1,
+                        x: 0,
                       }}
 
                       transition={{
-                        delay:index * 0.04,
+                        delay: index * 0.035,
+                        duration: 0.35,
+                        ease: [0.16, 1, 0.3, 1],
                       }}
 
                     >
@@ -246,24 +316,43 @@ export function MobileMenu({
 
                         onClick={onClose}
 
+                        aria-current={
+                          active
+                            ? 'page'
+                            : undefined
+                        }
 
-                        className={`
-                          block
-                          rounded-2xl
-                          px-5
-                          py-4
-                          text-xl
-                          font-bold
-                          transition-all
+                        className={[
+                          `
+                            block
+                            w-full
 
-                          ${
-                            active
-                            ?
-                            'bg-[--color-primary]/10 text-[--color-primary]'
-                            :
-                            'text-[--color-text]'
-                          }
-                        `}
+                            rounded-2xl
+
+                            px-5
+                            py-4
+
+                            font-[--font-heading]
+                            text-lg
+                            font-bold
+
+                            transition-all
+                            duration-200
+
+                            active:scale-[0.98]
+                          `,
+
+                          active
+                            ? `
+                                bg-[--color-primary]/10
+                                text-[--color-primary]
+                              `
+                            : `
+                                text-[--color-text]
+                                hover:bg-[--color-surface]
+                              `,
+
+                        ].join(' ')}
 
                       >
 
@@ -274,9 +363,7 @@ export function MobileMenu({
 
                     </motion.li>
 
-
                   );
-
 
                 }
 
@@ -285,19 +372,14 @@ export function MobileMenu({
 
             </ul>
 
-
           </nav>
-
 
 
         </motion.div>
 
-
       )}
 
-
     </AnimatePresence>
-
 
   );
 
