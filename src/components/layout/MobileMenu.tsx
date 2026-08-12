@@ -1,18 +1,10 @@
 import { useEffect } from 'react';
-
-import {
-  m as motion,
-  AnimatePresence,
-} from 'framer-motion';
-
+import { m as motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 
 import { NAV_LINKS } from '@/data/navigation';
-
 import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
-
 import { IconButton } from '@/components/ui/IconButton';
-
 
 
 interface MobileMenuProps {
@@ -20,7 +12,6 @@ interface MobileMenuProps {
   onClose: () => void;
   activeId: string;
 }
-
 
 
 export function MobileMenu({
@@ -39,9 +30,7 @@ export function MobileMenu({
     if (!isOpen) return;
 
 
-    const handleKeyDown = (
-      e: KeyboardEvent
-    ) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
 
       if (e.key === 'Escape') {
         onClose();
@@ -71,11 +60,9 @@ export function MobileMenu({
 
 
 
-
   return (
 
     <AnimatePresence>
-
 
       {isOpen && (
 
@@ -87,71 +74,54 @@ export function MobileMenu({
 
           aria-modal="true"
 
-          aria-label="Mobile navigation"
-
-
           initial={{
-            opacity: 0,
+            opacity:0,
           }}
-
 
           animate={{
-            opacity: 1,
+            opacity:1,
           }}
-
 
           exit={{
-            opacity: 0,
+            opacity:0,
           }}
-
 
           transition={{
-            duration: 0.18,
-            ease: 'easeOut',
+            duration:0.25,
           }}
-
 
           className="
             fixed
             inset-0
-            z-[60]
-            bg-[--color-bg]
-            text-[--color-text]
+            z-[999]
             lg:hidden
+            bg-[--color-bg]
           "
 
         >
 
 
-
-          {/* TOP BAR */}
+          {/* HEADER */}
 
           <div
-
             className="
               flex
-              h-16
+              h-20
               items-center
               justify-between
               px-6
             "
-
           >
 
-
             <span
-
               className="
                 font-[--font-heading]
-                text-lg
+                text-xl
                 font-bold
                 text-[--color-text]
               "
-
             >
-
               Menu
-
             </span>
 
 
@@ -159,7 +129,7 @@ export function MobileMenu({
             <IconButton
 
               icon={
-                <X size={20} />
+                <X size={22}/>
               }
 
               label="Close menu"
@@ -175,95 +145,72 @@ export function MobileMenu({
 
 
 
-          {/* NAV LINKS */}
+          {/* LINKS */}
 
           <ul
 
             className="
               flex
               flex-col
-              gap-2
+              gap-3
               px-6
-              pt-6
+              pt-8
             "
 
           >
 
-
-            {NAV_LINKS.map(
-              (link, index) => {
-
-
-              const linkId =
-                link.href.startsWith('#')
-                  ? link.href.slice(1)
-                  : link.href;
-
-
-
-              const isActive =
-                activeId === linkId;
-
-
-
-              return (
+            {
+              NAV_LINKS.map((link,index)=>(
 
                 <motion.li
 
                   key={link.href}
 
-
                   initial={{
-                    opacity: 0,
-                    x: -10,
+                    opacity:0,
+                    x:-20,
                   }}
-
 
                   animate={{
-                    opacity: 1,
-                    x: 0,
+                    opacity:1,
+                    x:0,
                   }}
 
-
                   transition={{
-                    delay: index * 0.03,
-                    duration: 0.2,
+                    delay:index*0.04,
+                    duration:0.25,
                   }}
 
                 >
-
 
                   <a
 
                     href={link.href}
 
-
                     onClick={onClose}
 
+                    className={`
+                      block
+                      rounded-xl
+                      px-5
+                      py-4
+                      text-2xl
+                      font-semibold
+                      transition
 
-                    aria-current={
-                      isActive
-                        ? 'true'
-                        : undefined
-                    }
+                      ${
+                        activeId === link.href.slice(1)
 
+                        ?
 
-                    className={[
+                        'bg-[--color-primary]/10 text-[--color-primary]'
 
-                      'block rounded-xl px-4 py-3 text-lg font-medium transition-colors',
+                        :
 
-                      isActive
+                        'text-[--color-text] hover:bg-black/5 dark:hover:bg-white/10'
+                      }
 
-                      ?
-
-                      'bg-[--color-primary]/10 text-[--color-primary]'
-
-                      :
-
-                      'text-[--color-text] hover:bg-[--color-primary]/10'
-
-                    ].join(' ')}
-
+                    `}
 
                   >
 
@@ -276,27 +223,26 @@ export function MobileMenu({
                 </motion.li>
 
 
-              );
+              ))
 
-
-            })}
+            }
 
 
           </ul>
 
 
-
         </motion.div>
+
 
       )}
 
 
     </AnimatePresence>
 
+
   );
 
 }
-
 
 
 export default MobileMenu;
