@@ -1,8 +1,15 @@
-import { type ButtonHTMLAttributes, type ReactNode } from 'react';
+import {
+  type ButtonHTMLAttributes,
+  type ReactNode,
+} from 'react';
 
-type Variant = 'primary' | 'secondary' | 'ghost';
+type Variant =
+  | 'primary'
+  | 'secondary'
+  | 'ghost';
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps
+  extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
   variant?: Variant;
   icon?: ReactNode;
@@ -10,39 +17,50 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<Variant, string> = {
   primary: `
-    border border-[--color-primary]/40
-    bg-gradient-to-r
-    from-[--color-primary-dark]
-    via-[--color-primary]
-    to-[--color-primary-light]
+    border
+    border-[var(--color-primary)]
+    bg-[var(--color-primary)]
     text-white
+
     shadow-lg
-    shadow-[--color-primary]/20
-    hover:-translate-y-1
-    hover:scale-[1.02]
-    hover:shadow-2xl
-    hover:shadow-[--color-primary]/30
+    shadow-black/10
+
+    hover:-translate-y-0.5
+    hover:brightness-110
+    hover:shadow-xl
+
+    active:translate-y-0
+    active:scale-[0.98]
+
+    dark:border-[var(--color-primary)]
+    dark:bg-[var(--color-primary)]
+    dark:text-white
   `,
 
   secondary: `
     border
-    border-[--color-border]
-    bg-[--color-surface]/70
-    text-[--color-text]
-    backdrop-blur-md
-    hover:-translate-y-1
-    hover:border-[--color-primary]/50
-    hover:bg-[--color-primary]/5
-    hover:shadow-lg
-    hover:shadow-[--color-primary]/10
-    dark:bg-white/[0.04]
+    border-[var(--color-border)]
+
+    bg-[var(--color-surface)]
+    text-[var(--color-text)]
+
+    hover:-translate-y-0.5
+    hover:border-[var(--color-primary)]
+    hover:bg-[var(--color-primary)]/5
+
+    dark:bg-[var(--color-surface)]
+    dark:text-[var(--color-text)]
   `,
 
   ghost: `
+    border
+    border-transparent
+
     bg-transparent
-    text-[--color-text-muted]
-    hover:bg-[--color-primary]/10
-    hover:text-[--color-primary]
+    text-[var(--color-text-muted)]
+
+    hover:bg-[var(--color-primary)]/10
+    hover:text-[var(--color-primary)]
   `,
 };
 
@@ -51,61 +69,70 @@ export function Button({
   variant = 'primary',
   icon,
   className = '',
+  disabled,
   ...rest
 }: ButtonProps) {
   return (
     <button
+      disabled={disabled}
       className={`
         group
         relative
+
         inline-flex
+        min-h-11
         items-center
         justify-center
         gap-2
+
         overflow-hidden
+
         rounded-full
+
         px-6
         py-3
+
         text-sm
         font-semibold
         tracking-wide
-        transition-all
-        duration-300
+
+        transition-[transform,background-color,border-color,box-shadow,filter,opacity]
+        duration-200
         ease-out
-        active:scale-95
+
+        focus-visible:outline
         focus-visible:outline-2
         focus-visible:outline-offset-2
-        focus-visible:outline-[--color-primary]
-        disabled:pointer-events-none
+        focus-visible:outline-[var(--color-primary)]
+
+        disabled:cursor-not-allowed
         disabled:opacity-50
+        disabled:transform-none
+
         ${variantStyles[variant]}
+
         ${className}
       `}
       {...rest}
     >
-      {variant === 'primary' && (
-        <span
-          aria-hidden="true"
-          className="
-            pointer-events-none
-            absolute
-            inset-0
-            -translate-x-full
-            bg-gradient-to-r
-            from-transparent
-            via-white/20
-            to-transparent
-            transition-transform
-            duration-700
-            group-hover:translate-x-full
-          "
-        />
-      )}
-
-      <span className="relative z-10 flex items-center gap-2">
+      <span
+        className="
+          relative
+          z-10
+          flex
+          items-center
+          justify-center
+          gap-2
+        "
+      >
         {icon}
-        {children}
+
+        <span>
+          {children}
+        </span>
       </span>
     </button>
   );
 }
+
+export default Button;
