@@ -71,9 +71,11 @@ export function MobileMenu({
 
 
 
+
   return (
 
     <AnimatePresence>
+
 
       {isOpen && (
 
@@ -113,17 +115,19 @@ export function MobileMenu({
             fixed
             inset-0
             z-[60]
-            bg-white
-            dark:bg-[--color-bg-dark]
+            bg-[--color-bg]
+            text-[--color-text]
             lg:hidden
           "
 
         >
 
 
-          {/* HEADER */}
+
+          {/* TOP BAR */}
 
           <div
+
             className="
               flex
               h-16
@@ -131,18 +135,23 @@ export function MobileMenu({
               justify-between
               px-6
             "
+
           >
 
 
             <span
+
               className="
                 font-[--font-heading]
                 text-lg
                 font-bold
                 text-[--color-text]
               "
+
             >
+
               Menu
+
             </span>
 
 
@@ -166,7 +175,7 @@ export function MobileMenu({
 
 
 
-          {/* LINKS */}
+          {/* NAV LINKS */}
 
           <ul
 
@@ -205,20 +214,20 @@ export function MobileMenu({
 
 
                   initial={{
-                    opacity:0,
-                    x:-10,
+                    opacity: 0,
+                    x: -10,
                   }}
 
 
                   animate={{
-                    opacity:1,
-                    x:0,
+                    opacity: 1,
+                    x: 0,
                   }}
 
 
                   transition={{
-                    delay:index * 0.03,
-                    duration:0.2,
+                    delay: index * 0.03,
+                    duration: 0.2,
                   }}
 
                 >
@@ -251,7 +260,7 @@ export function MobileMenu({
 
                       :
 
-                      'text-[--color-text] hover:bg-black/5 dark:hover:bg-white/10'
+                      'text-[--color-text] hover:bg-[--color-primary]/10'
 
                     ].join(' ')}
 
@@ -285,7 +294,6 @@ export function MobileMenu({
     </AnimatePresence>
 
   );
-
 
 }
 
